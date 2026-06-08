@@ -5,7 +5,7 @@ import org.apache.spark.sql.Row
 
 class tareas {
 
-  def rrdFiltrado(rdd: RDD[String]) = {
+  def rddFiltrado(rdd: RDD[String]) = {
     val rddfilter = rdd.filter(linea => linea.startsWith("[ERROR]") || linea.startsWith("[INFO]"))
     rddfilter
   }
@@ -31,6 +31,11 @@ class tareas {
     val nLogs = rdd.count()
     val porcentaje = (nErrores.toDouble/nLogs)*100
     porcentaje
+  }
+
+  def contarPorNivel(rddMapeado: RDD[(String, String)]) = {
+    rddMapeado.map(par => (par._1, 1))
+      .reduceByKey(_ + _)
   }
 
 }
