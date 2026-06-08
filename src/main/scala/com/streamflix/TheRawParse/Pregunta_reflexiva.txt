@@ -1,0 +1,11 @@
+¿Por qué usar reduceByKey en lugar de groupByKey?
+reduceByKey es más eficiente porque realiza una combinación local en cada nodo antes de hacer el shuffle. Es decir, reduce los datos parcialmente en cada máquina y luego envía por la red solo los resultados parciales, no todos los registros.
+groupByKey en cambio envía todos los valores sin procesar a través de la red, lo que genera mucho más tráfico y consumo de memoria.
+
+
+Qué ocurriría con groupByKey con 200M de registros donde una clave concentra el 80%?
+Esos 160 millones de registros irían a parar a un solo nodo, que se quedaría sin memoria y lanzaría un OutOfMemoryError. Esto se conoce como data skew (sesgo de datos) y es uno de los problemas más comunes en Spark.
+
+Concepto de Shuffling
+El shuffle es el proceso por el cual Spark mueve datos entre nodos de la red para reagruparlos por clave. Es la operación más costosa en Spark porque implica escritura en disco y transferencia por red.
+reduceByKey minimiza el shuffle reduciendo los datos localmente antes de transferirlos. groupByKey no hace esa reducción previa, por lo que genera un shuffle mucho mayor.

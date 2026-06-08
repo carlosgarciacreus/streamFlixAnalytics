@@ -1,5 +1,10 @@
 package com.streamflix.reader
 
-class ParquetReader {
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
+class ParquetReader extends FileReader {
+  override def read(spark: SparkSession, path: String): DataFrame = {
+    spark.read
+      .parquet(path)
+  }
 }
