@@ -1,0 +1,12 @@
+Al definir el campo subscription_price, ¿por qué en un entorno bancario/facturación real deberías usar DecimalType en lugar de DoubleType? Muestra
+un ejemplo de código donde DoubleType pierda precisión en una suma.
+
+DoubleType usa representación en punto flotante binario, lo que significa que no puede representar exactamente todos los números decimales.
+Esto causa errores de precisión en operaciones matemáticas.
+En entornos bancarios donde manejas dinero, un error de precisión puede significar cobrar de más o de menos a un cliente.
+
+EJEMPLO
+
+val a: Double = 0.1
+val b: Double = 0.2
+println(a + b)  // Resultado: 0.30000000000000004
