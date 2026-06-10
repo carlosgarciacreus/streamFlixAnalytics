@@ -1,15 +1,15 @@
 package com.streamflix.TheRawParse
 
 import org.apache.spark.sql.SparkSession
-import com.streamflix.TheRawParse.tareas
-import org.apache.hadoop.fs.{FileSystem, Path}
+import com.streamflix.Config
+
 
 object Modulo1 {
 
   def run(spark: SparkSession): Unit = {
     val sc = spark.sparkContext
 
-    val rdd = sc.textFile("src/main/resources/data/server_logs.txt")
+    val rdd = sc.textFile(Config.SERVER_LOGS_PATH)
 
     val tareas = new tareas()
     val rddFiltrado = tareas.rddFiltrado(rdd)
@@ -20,6 +20,6 @@ object Modulo1 {
     val rddMapeado = tareas.rddMapeado(rddFiltrado)
     val codigoCantidad = tareas.contarPorNivel(rddMapeado)
 
-    codigoCantidad.coalesce(1).saveAsTextFile("output/error_counts")
+    codigoCantidad.coalesce(1).saveAsTextFile(Config.OUTPUT_PATH)
   }
   }
