@@ -1,49 +1,22 @@
 package com.streamflix
 
 import org.apache.spark.sql.SparkSession
-import com.streamflix.TheRawParse.tareas
-import com.streamflix.Estandarizacion.MovieReader
-import com.streamflix.Estandarizacion.MovieCleaner
+import com.streamflix.TheRawParse.Modulo1
+import com.streamflix.Estandarizacion.Modulo2
 
 object Main extends App {
+  System.setProperty("hadoop.home.dir", "C:\\hadoop")
 
-  // Inicializar SparkSession
   val spark = SparkSession.builder()
     .appName("StreamFlixAnalytics")
     .master("local[*]")
     .getOrCreate()
 
-  // Obtener SparkContext
-  val sc = spark.sparkContext
-  sc.setLogLevel("ERROR")
+  spark.sparkContext.setLogLevel("ERROR")
 
-  val rdd= sc.textFile("src/main/resources/data/server_logs.txt")
-
-  val tareas = new tareas()
-  val rddFiltrado = tareas.rddFiltrado(rdd)
-
-  val lineasDescartadas = rdd.count() - rddFiltrado.count()
-  println(s"Líneas descartadas: $lineasDescartadas")
-
-  val rddMapeado = tareas.rddMapeado(rddFiltrado)
-  val codigoCantidad = tareas.contarPorNivel(rddMapeado)
-  codigoCantidad.saveAsTextFile("output/error_counts")
-
-
-  // MÓDULO 2
-
-  val movieReader = new MovieReader()
-  val moviesDF = movieReader.read2(spark, "src/main/resources/data/movies_metadata.csv")
-
-  val movieCleaner = new MovieCleaner()
-
-  val dfPrecioLimpio = movieCleaner.limpiarPrecio(moviesDF)
-
-  movieCleaner.nulosDuplicados(dfPrecioLimpio)
-
-  val dfGenresNulos = movieCleaner.genresNulos(dfPrecioLimpio)
-  dfGenresNulos.printSchema()
-  dfGenresNulos.show(5)
-
-  spark.stop()
+  args(0) match {
+    case "1" => Modulo1.run(spark)
+    case "2" => Modulo2.run(spark)
+    case _   => println("Módulo no encontrado")
+  }
 }

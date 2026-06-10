@@ -14,7 +14,7 @@ class CsvReader extends FileReader {
   def readWithSchema(spark: SparkSession, path: String, schema: StructType): DataFrame = {
     spark.read
       .option("header", "true")
-      .option("mode", "DROPMALFORMED")
+      .option("mode", "PERMISSIVE")
       .schema(schema)
       .csv(path)
   }

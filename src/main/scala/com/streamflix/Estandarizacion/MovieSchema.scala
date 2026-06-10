@@ -7,8 +7,9 @@ class MovieSchema {
     StructField("id", LongType, nullable = false),
     StructField("title", StringType, nullable = false),
     StructField("genres", StringType, nullable = true),
-    StructField("subscription_price", DoubleType, nullable = true),
-    StructField("release_date", StringType, nullable = false)
+    StructField("subscription_price", StringType, nullable = true),
+    StructField("release_date", StringType, nullable = false),
+    StructField("country", StringType, nullable = true)
 
   ))
 
