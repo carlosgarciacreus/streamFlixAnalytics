@@ -14,7 +14,11 @@ object Modulo1 {
     val tareas = new tareas()
     val rddFiltrado = tareas.rddFiltrado(rdd)
 
-    val lineasDescartadas = rdd.count() - rddFiltrado.count()
+    val lineasDescartadas = rdd.filter(linea =>
+      !linea.startsWith("[INFO]") &&
+        !linea.startsWith("[ERROR]") &&
+        !linea.startsWith("[WARN]")
+    ).count()
     println(s"Líneas descartadas: $lineasDescartadas")
 
     val rddMapeado = tareas.rddMapeado(rddFiltrado)
