@@ -30,5 +30,8 @@ object Modulo3 {
     val resultado = genreEx.explotar(enrichedDF)
     resultado.orderBy(col("total_hours").desc).show()
 
+    logsDF.show()
+
+
   }
 }
