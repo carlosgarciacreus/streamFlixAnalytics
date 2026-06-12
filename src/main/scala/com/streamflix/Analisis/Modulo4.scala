@@ -2,6 +2,8 @@ package com.streamflix.Analisis
 
 import com.streamflix.Config
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
+
 
 
 object Modulo4 {

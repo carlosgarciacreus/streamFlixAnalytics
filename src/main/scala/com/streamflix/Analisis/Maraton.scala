@@ -5,6 +5,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.expressions.WindowSpec
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.LongType
 
 class Maraton {
 
@@ -16,7 +17,7 @@ class Maraton {
       val parts = linea.split("\\|")
       val inicio = parts(0).split("]")(1).trim
       val user = parts(1).split(":")(1).toInt
-      val pelicula = parts(2).split(":")(1)
+      val pelicula = parts(2).split(":")(1).replace("Movie_", "")
       val duracion = parts(3).split(":")(1).toInt
       (inicio, user, pelicula, duracion)
     }
@@ -26,7 +27,8 @@ class Maraton {
   def toDataFrame(spark: SparkSession, rdd: RDD[(String, Int, String, Int)]): DataFrame = {
     import spark.implicits._
     rdd.toDF("Inicio", "usuario", "movie_id", "duracion")
-      .withColumn("Inicio", to_timestamp(col("Inicio")))
+      .withColumn("Inicio", to_timestamp(col("Inicio"),"yyyy-MM-dd HH:mm:ss"))
+      .filter(col("Inicio").isNotNull)
   }
 
   def windowSpec(): WindowSpec = {
@@ -38,15 +40,15 @@ class Maraton {
   }
 
   def diferencia(df: DataFrame): DataFrame = {
-    df.withColumn("Diferencia", (unix_timestamp(col("Inicio")) - unix_timestamp(col("prev_inicio"))) / 60)
+    df.withColumn("Diferencia", (col("Inicio").cast(LongType) - col("prev_inicio").cast(LongType)) / 60)
   }
 
   def is_binge(df: DataFrame): DataFrame = {
-    df.withColumn("is_binge", when(col("Diferencia") >= 0 && col("Diferencia") < 20, 1).otherwise(0))
+    df.withColumn("is_binge", when(col("Diferencia") > 0 && col("Diferencia") < 20, 1).otherwise(0))
   }
 
   def mostrar(df: DataFrame): DataFrame = {
-    df.filter(col("is_binge") === 1).groupBy("usuario").count().orderBy(col("count").desc).limit(10)
+    df.filter(col("is_binge") === 1).groupBy("usuario").agg(count("*").alias("conteo")).orderBy(col("conteo").desc).limit(10)
   }
 
 }

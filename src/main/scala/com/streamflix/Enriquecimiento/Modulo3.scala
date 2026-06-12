@@ -25,6 +25,8 @@ object Modulo3 {
     val moviesDF = movieReader.read2(spark, Config.MOVIES_PATH)
     val enrichedDF = logJoin.broadcastJoin(logsDF, moviesDF)
 
+    enrichedDF.show(10)
+
 
     val genreEx = new genreEx()
     val resultado = genreEx.explotar(enrichedDF)
